@@ -97,16 +97,16 @@ function NetworkCanvas() {
         const dm = Math.hypot(p.x - mouse.x, p.y - mouse.y);
         if (dm < 140) { p.x += (p.x - mouse.x) / dm; p.y += (p.y - mouse.y) / dm; }
       }
-      for (let i = 0; i < pts.length; i++) {
-        for (let j = i + 1; j < pts.length; j++) {
-          const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+      for (let i = 0; i < pts.length; i++) { const a = pts[i]!;
+        for (let j = i + 1; j < pts.length; j++) { const b = pts[j]!;
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
           if (d < 120) {
             ctx.strokeStyle = ember; ctx.globalAlpha = (1 - d / 120) * 0.35; ctx.lineWidth = 0.6;
-            ctx.beginPath(); ctx.moveTo(pts[i].x, pts[i].y); ctx.lineTo(pts[j].x, pts[j].y); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
           }
         }
         ctx.globalAlpha = 0.8; ctx.fillStyle = ember;
-        ctx.beginPath(); ctx.arc(pts[i].x, pts[i].y, 1.4, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(a.x, a.y, 1.4, 0, Math.PI * 2); ctx.fill();
       }
       raf = requestAnimationFrame(tick);
     };
