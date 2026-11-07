@@ -15,4 +15,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Sempre servir em http://localhost:5174/
+  vite: {
+    server: { host: "localhost", port: 5174, strictPort: true },
+  },
 });
