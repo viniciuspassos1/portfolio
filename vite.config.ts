@@ -17,6 +17,6 @@ export default defineConfig({
   },
   // Sempre servir em http://localhost:5174/
   vite: {
-    server: { host: "localhost", port: 5174, strictPort: true },
+    server: { host: "localhost", port: 5174, strictPort: true, watch: { ignored: ["**/.output/**", "**/node_modules/**", "**/.git/**"] } },
   },
 });

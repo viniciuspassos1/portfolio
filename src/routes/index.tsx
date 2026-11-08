@@ -1,9 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, useMotionValue, useScroll, useSpring, useTransform, useVelocity } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useVelocity,
+} from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowUpRight, BarChart3, Bot, Code2, Database, FileSpreadsheet, Gauge, GitMerge,
-  HardDrive, MessageSquareText, Plug, Sparkles, Workflow, type LucideIcon,
+  ArrowDown, ArrowUpRight, BrainCircuit, Bot, Code2, Database, FileSpreadsheet,
+  Gauge, Menu, Network, PlugZap, Sparkles, Workflow, X, type LucideIcon,
 } from "lucide-react";
 import { FadeIn, AnimatedText } from "@/components/motion";
 import portraitImage from "@/assets/hero-boneco.png";
@@ -29,10 +38,10 @@ export const Route = createFileRoute("/")({
 
 const LINKEDIN = "https://www.linkedin.com/in/andr%C3%A9-vin%C3%ADcius-de-oliveira-passos-7117b71b6/";
 
-function ContactButton() {
+function ContactButton({ inverse = false }: { inverse?: boolean }) {
   return (
     <a href={LINKEDIN} target="_blank" rel="noreferrer"
-      className="btn-cta inline-block rounded-full px-8 py-3 text-xs font-medium uppercase tracking-widest transition-transform hover:scale-105 sm:px-10 sm:py-3.5 sm:text-sm md:px-12 md:py-4 md:text-base">
+      className={`btn-cta ${inverse ? "btn-cta--inverse" : ""} inline-block rounded-md px-8 py-3 text-xs font-semibold uppercase tracking-widest transition-transform hover:scale-[1.02] sm:px-10 sm:py-3.5 sm:text-sm md:px-12 md:py-4 md:text-base`}>
       Fale comigo
     </a>
   );
@@ -41,13 +50,90 @@ function ContactButton() {
 function GhostButton({ label, href }: { label: string; href?: string }) {
   return (
     <a href={href ?? LINKEDIN} target="_blank" rel="noreferrer"
-      className="inline-flex items-center gap-2 rounded-full border-2 border-border px-6 py-2.5 text-sm font-medium uppercase tracking-widest text-foreground transition-colors hover:bg-foreground/10 sm:px-8 sm:py-3">
+      className="inline-flex items-center gap-2 rounded-md border border-border px-6 py-2.5 text-sm font-medium uppercase tracking-widest text-foreground transition-colors hover:border-ember hover:text-ember sm:px-8 sm:py-3">
       {label} <ArrowUpRight className="h-4 w-4" />
     </a>
   );
 }
 
-/* Retrato fixo ao fundo: a imagem não se move; só os olhos reagem ao mouse e à rolagem. */
+function SiteHeader() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
+  const links = [
+    { href: "#inicio", label: "Início" },
+    { href: "#sobre", label: "Sobre" },
+    { href: "#projetos", label: "Portfólio" },
+    { href: "#contato", label: "Contato" },
+  ];
+
+  return (
+    <header className="fixed inset-x-0 top-4 z-50 mx-auto w-[calc(100%-2rem)] max-w-5xl">
+      <div className="flex items-center justify-between rounded-full border border-white/10 bg-black/75 px-5 py-3 shadow-[0_8px_32px_rgb(0_0_0/35%)] backdrop-blur-xl sm:px-7">
+        <a
+          href="#contato"
+          className="inline-flex items-center gap-2.5 rounded-full border border-ember/35 bg-black/70 px-4 py-2 text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-white/85 transition-colors hover:border-ember sm:text-xs"
+        >
+          <span aria-hidden="true" className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ember/60 motion-reduce:animate-none" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-ember" />
+          </span>
+          Disponível para projetos
+        </a>
+        <nav aria-label="Navegação principal" className="hidden items-center gap-8 md:flex">
+          {links.map(({ href, label }) => (
+            <a
+              key={href}
+              href={href}
+              className={`text-xs font-medium uppercase tracking-[0.16em] transition-colors hover:text-ember ${
+                href === "#contato"
+                  ? "rounded-full border border-ember/50 px-4 py-2 text-ember"
+                  : "text-white/65"
+              }`}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+        <button
+          type="button"
+          aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white transition-colors hover:border-ember hover:text-ember md:hidden"
+        >
+          {menuOpen ? <X aria-hidden="true" className="h-5 w-5" /> : <Menu aria-hidden="true" className="h-5 w-5" />}
+        </button>
+      </div>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            id="mobile-navigation"
+            aria-label="Navegação principal"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: shouldReduceMotion ? 0 : 0.18 }}
+            className="mt-2 flex flex-col gap-1 rounded-3xl border border-white/10 bg-black/90 p-3 shadow-xl backdrop-blur-xl md:hidden"
+          >
+            {links.map(({ href, label }) => (
+              <a
+                key={href}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+                className="rounded-2xl px-4 py-3 text-xs font-medium uppercase tracking-[0.16em] text-white/75 transition-colors hover:bg-white/5 hover:text-ember"
+              >
+                {label}
+              </a>
+            ))}
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
+
+/* O retrato permanece estático; apenas os olhos acompanham o cursor e a rolagem. */
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
 function DataCharacter() {
@@ -113,84 +199,137 @@ function DataCharacter() {
   );
 }
 
-function FixedCharacter() {
-  return (
-    <div aria-hidden={false} className="pointer-events-none fixed inset-x-0 bottom-0 z-[1] flex justify-center">
-      <div style={{ width: "min(78vw, 66vh)", aspectRatio: "640 / 577" }}>
-        <DataCharacter />
-      </div>
-    </div>
-  );
-}
-
 /* ---------------- HERO ---------------- */
+const HERO_ROLES = [
+  "Analista de Sistemas",
+  "Analista de Desenvolvimento de Sistemas",
+  "Professor de Robótica e IA",
+  "Desenvolvedor RPA",
+];
+
 function Hero() {
-  return (
-    <section className="relative flex h-screen flex-col" style={{ overflowX: "clip" }}>
-      <div className="overflow-hidden px-4 pt-6 md:pt-8">
-        <FadeIn delay={0.15} y={40}>
-          <h1 className="hero-heading mt-6 w-full whitespace-nowrap text-center text-[10vw] font-black uppercase leading-none tracking-tight sm:mt-4 md:-mt-2 lg:text-[10.2vw]">
-            Vinicius Passos
-          </h1>
-        </FadeIn>
-      </div>
+  const shouldReduceMotion = useReducedMotion();
+  const heading = "Vinicius Passos";
+  const [roleIndex, setRoleIndex] = useState(0);
+  const currentRole = HERO_ROLES[roleIndex] ?? HERO_ROLES[0] ?? "Analista de Sistemas";
 
-      <div className="relative z-20 mt-auto flex flex-col gap-5 px-6 pb-7 sm:flex-row sm:items-end sm:justify-between sm:pb-8 md:px-10 md:pb-10">
-        <FadeIn delay={0.35} y={20}>
-          <p className="max-w-[260px] font-semibold uppercase leading-snug tracking-wide sm:max-w-[300px] md:max-w-[340px]" style={{ fontSize: "clamp(1rem, 1.9vw, 1.9rem)" }}>
-            Analista de Dados & Desenvolvedor de Sistemas
-          </p>
-        </FadeIn>
-        <FadeIn delay={0.5} y={20}>
-          <p className="max-w-[300px] text-[0.8rem] leading-relaxed text-foreground/70 sm:max-w-[300px] sm:text-sm md:max-w-[380px]">
-            Desenvolvimento de sistemas personalizados que integram sites, gestão e análise financeira, automações e agentes de inteligência artificial, oferecendo soluções inteligentes para otimizar processos, gerar insights e facilitar a tomada de decisões.
-          </p>
-        </FadeIn>
-      </div>
-    </section>
-  );
-}
-
-/* ---------------- MARQUEE ---------------- */
-type Tile = { icon: LucideIcon; label: string };
-const row1: Tile[] = [
-  { icon: BarChart3, label: "Power BI" }, { icon: Code2, label: "Python" }, { icon: Workflow, label: "n8n" },
-  { icon: Database, label: "SQL" }, { icon: MessageSquareText, label: "PLN" }, { icon: FileSpreadsheet, label: "Excel" },
-];
-const row2: Tile[] = [
-  { icon: HardDrive, label: "Big Data" }, { icon: Sparkles, label: "IA Generativa" }, { icon: GitMerge, label: "ETL" },
-  { icon: Gauge, label: "KPIs" }, { icon: Bot, label: "Automação" }, { icon: Plug, label: "APIs" },
-];
-
-function TileCard({ t }: { t: Tile }) {
-  const Icon = t.icon;
-  return (
-    <div className="flex h-[150px] w-[260px] shrink-0 flex-col items-center justify-center gap-4 rounded-2xl border border-border bg-card sm:h-[190px] sm:w-[340px]">
-      <Icon className="h-10 w-10 sm:h-14 sm:w-14" strokeWidth={1.5} style={{ color: "#ff7a2f" }} />
-      <span className="hero-heading text-xl font-black uppercase tracking-wide sm:text-3xl">{t.label}</span>
-    </div>
-  );
-}
-
-function Marquee() {
-  const ref = useRef<HTMLElement>(null);
-  const [offset, setOffset] = useState(0);
   useEffect(() => {
-    const on = () => {
-      const top = ref.current?.offsetTop ?? 0;
-      setOffset((window.scrollY - top + window.innerHeight) * 0.3);
-    };
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
+    if (shouldReduceMotion) return;
+
+    const intervalId = window.setInterval(() => {
+      setRoleIndex((current) => (current + 1) % HERO_ROLES.length);
+    }, 3200);
+
+    return () => window.clearInterval(intervalId);
+  }, [shouldReduceMotion]);
+
+  const headingVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        delayChildren: shouldReduceMotion ? 0 : 0.2,
+        staggerChildren: shouldReduceMotion ? 0 : 0.045,
+      },
+    },
+  };
+  const letterVariants = {
+    hidden: {
+      opacity: 0,
+      y: shouldReduceMotion ? 0 : 64,
+      rotateX: shouldReduceMotion ? 0 : -75,
+      filter: shouldReduceMotion ? "blur(0px)" : "blur(10px)",
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      rotateX: 0,
+      filter: "blur(0px)",
+      transition: { duration: shouldReduceMotion ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] },
+    },
+  };
+
   return (
-    <section ref={ref} className="relative z-10 flex flex-col gap-3 bg-background/70 overflow-hidden pb-10 pt-24 sm:pt-32 md:pt-40">
-      <div className="flex gap-3" style={{ transform: `translateX(${offset - 900}px)`, willChange: "transform" }}>
-        {[...row1, ...row1, ...row1].map((t, i) => <TileCard key={i} t={t} />)}
-      </div>
-      <div className="flex gap-3" style={{ transform: `translateX(${-(offset - 200)}px)`, willChange: "transform" }}>
-        {[...row2, ...row2, ...row2].map((t, i) => <TileCard key={i} t={t} />)}
+    <section id="inicio" className="relative flex min-h-[100svh] scroll-mt-24 flex-col overflow-x-clip border-t border-border">
+      <div aria-hidden="true" className="editorial-grid pointer-events-none absolute inset-0 opacity-80" />
+
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 items-center gap-6 px-6 pb-8 pt-10 sm:px-10 md:px-14 lg:grid-cols-[1.1fr_.9fr] lg:gap-10 lg:pb-12 lg:pt-28">
+        <div className="relative z-20 flex flex-col items-start">
+          <motion.h1
+            aria-label={heading}
+            variants={headingVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ perspective: 1000 }}
+            className="mt-3 flex flex-col items-start text-left text-[clamp(4rem,11vw,9.5rem)] font-black uppercase leading-[0.82] tracking-[-0.065em] text-white"
+          >
+            {heading.split(" ").map((word) => (
+              <span key={word} aria-hidden="true" className="inline-flex whitespace-nowrap">
+                {word.split("").map((letter, letterIndex) => (
+                  <motion.span
+                    key={`${letter}-${letterIndex}`}
+                    variants={letterVariants}
+                    className={`inline-block ${word === "Passos" ? "text-ember" : ""}`}
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+              </span>
+            ))}
+          </motion.h1>
+
+          <FadeIn delay={0.35} y={16}>
+            <div className="mt-6 flex items-center gap-3 sm:mt-8">
+              <span aria-hidden="true" className="h-px w-8 bg-ember sm:w-12" />
+              <div className="min-h-7">
+                <AnimatePresence initial={false} mode="wait">
+                  <motion.p
+                    key={currentRole}
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.3, ease: "easeOut" }}
+                    className="text-sm font-semibold uppercase leading-snug tracking-[0.12em] text-white/80 sm:text-base"
+                  >
+                    {currentRole}
+                  </motion.p>
+                </AnimatePresence>
+              </div>
+            </div>
+          </FadeIn>
+
+          <p className="mt-5 text-xs font-medium uppercase tracking-[0.18em] text-ember sm:text-sm">
+            Dados · Sistemas · Agentes de IA
+          </p>
+
+          <FadeIn delay={0.5} y={18}>
+            <p className="mt-5 max-w-[480px] text-sm leading-relaxed text-foreground/70 sm:text-base">
+              Desenvolvimento de sistemas personalizados que integram sites, gestão e análise financeira, automações e agentes de IA para otimizar processos, gerar insights e facilitar decisões.
+            </p>
+          </FadeIn>
+
+          <div className="mt-6 flex flex-wrap gap-2" aria-label="Tecnologias em destaque">
+            {["Python", "SQL", "Power BI", "n8n", "IA"].map((technology) => (
+              <span
+                key={technology}
+                className="rounded-full border border-border px-3 py-1.5 text-[0.65rem] font-medium uppercase tracking-wider text-white/70 sm:text-xs"
+              >
+                {technology}
+              </span>
+            ))}
+          </div>
+
+          <a
+            href="#projetos"
+            className="mt-8 inline-flex min-h-11 items-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:text-ember"
+          >
+            Explore meus projetos
+            <ArrowDown aria-hidden="true" className="h-4 w-4 text-ember" />
+          </a>
+        </div>
+
+        <FadeIn delay={0.3} y={24} className="relative z-10 mx-auto w-[min(78vw,440px)] lg:ml-auto lg:w-full lg:max-w-[540px]">
+          <DataCharacter />
+        </FadeIn>
       </div>
     </section>
   );
@@ -199,17 +338,24 @@ function Marquee() {
 /* ---------------- ABOUT ---------------- */
 function About() {
   return (
-    <section id="sobre" className="relative z-10 bg-background/70 flex min-h-screen flex-col items-center justify-center gap-16 px-5 py-20 sm:gap-20 sm:px-8 md:gap-24 md:px-10">
-      <div className="flex flex-col items-center gap-10 sm:gap-14 md:gap-16">
-        <FadeIn y={40}>
-          <h2 className="hero-heading text-center font-black uppercase leading-none tracking-tight" style={{ fontSize: "clamp(3rem, 12vw, 160px)" }}>Sobre mim</h2>
-        </FadeIn>
+    <section id="sobre" className="relative z-10 grid min-h-[80vh] scroll-mt-24 items-center gap-12 border-t border-border bg-background px-6 py-24 sm:px-10 md:grid-cols-[0.8fr_1.2fr] md:gap-20 md:px-14">
+      <FadeIn y={40}>
+        <div>
+          <p className="mb-5 text-xs font-medium uppercase tracking-[0.2em] text-ember">Perfil profissional</p>
+          <h2 className="hero-heading font-black uppercase leading-[0.9] tracking-[-0.06em]" style={{ fontSize: "clamp(3.5rem, 8vw, 7.5rem)" }}>
+            Sobre mim
+          </h2>
+        </div>
+      </FadeIn>
+      <div className="flex flex-col items-start gap-8">
         <AnimatedText
-          className="max-w-[600px] text-center font-medium leading-relaxed"
-          text="Sou de Salvador e trabalho com análise de dados, automação de processos e inteligência artificial. Hoje atuo como assistente de dados na Just Travel, criando controles inteligentes e relatórios que apoiam decisões. Já passei pelo suporte técnico na Solutis e pelo ensino de programação e robótica. Vamos transformar seus dados em resultado?"
+          className="max-w-[680px] text-base font-medium leading-relaxed text-white/75 sm:text-lg"
+          text="Formado em Análise de Sistemas, com pós-graduação em Ciência de Dados e Inteligência Artificial. Transformo dados em insights estratégicos, desenvolvo automações inteligentes e soluções tecnológicas que otimizam processos e impulsionam resultados. Uno análise de dados, desenvolvimento de sistemas e inteligência artificial para transformar informações em oportunidades e desafios em soluções."
         />
+        <FadeIn>
+          <ContactButton />
+        </FadeIn>
       </div>
-      <FadeIn><ContactButton /></FadeIn>
     </section>
   );
 }
@@ -229,10 +375,10 @@ function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number;
   return (
     <div ref={ref} className="h-[85vh]">
       <motion.div style={{ scale, top: `calc(6rem + ${i * 28}px)` }}
-        className="sticky rounded-[40px] border-2 border-border bg-background p-4 sm:rounded-[50px] sm:p-6 md:rounded-[60px] md:p-8">
+        className="project-card sticky rounded-2xl border border-border bg-background p-4 sm:p-6 md:p-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 px-2">
           <div className="flex items-center gap-5">
-            <span className="font-black leading-none" style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}>0{i + 1}</span>
+            <span className="font-black leading-none text-white" style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}>0{i + 1}</span>
             <div>
               <p className="text-sm uppercase tracking-widest text-muted-foreground">{p.cat}</p>
               <h3 className="font-medium uppercase" style={{ fontSize: "clamp(1.1rem, 2.4vw, 2.2rem)" }}>{p.name}</h3>
@@ -242,47 +388,232 @@ function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number;
         </div>
         <div className="flex gap-3">
           <div className="flex w-[40%] flex-col gap-3">
-            <div className="flex items-end rounded-[30px] bg-card p-6 md:rounded-[50px]" style={{ height: "clamp(130px, 16vw, 230px)" }}>
+            <div className="flex items-end rounded-xl bg-card p-6" style={{ height: "clamp(130px, 16vw, 230px)" }}>
               <p className="font-medium uppercase" style={{ fontSize: "clamp(0.9rem, 1.8vw, 1.6rem)" }}>{p.a}</p>
             </div>
-            <div className="flex items-end rounded-[30px] bg-secondary p-6 md:rounded-[50px]" style={{ height: "clamp(160px, 22vw, 340px)" }}>
+            <div className="flex items-end rounded-xl bg-secondary p-6" style={{ height: "clamp(160px, 22vw, 340px)" }}>
               <p className="hero-heading font-black uppercase" style={{ fontSize: "clamp(1rem, 2.4vw, 2.4rem)" }}>{p.b}</p>
             </div>
           </div>
           <img src={p.img} alt={p.name} loading="lazy" width={1280} height={960}
-            className="w-[60%] rounded-[30px] object-cover md:rounded-[50px]" />
+            className="w-[60%] rounded-xl object-cover" />
         </div>
       </motion.div>
     </div>
   );
 }
 
-function Projects() {
+const showcaseTabs = [
+  { id: "projects", label: "Projetos" },
+  { id: "education", label: "Formação" },
+  { id: "technology", label: "Tech Stack" },
+] as const;
+
+type ShowcaseTab = (typeof showcaseTabs)[number]["id"];
+
+const technologies: { name: string; icon: LucideIcon; color: string }[] = [
+  { name: "Power BI", icon: Gauge, color: "#f2c811" },
+  { name: "Python", icon: Code2, color: "#3776ab" },
+  { name: "n8n", icon: Workflow, color: "#ea4b71" },
+  { name: "SQL", icon: Database, color: "#e38c35" },
+  { name: "PLN", icon: BrainCircuit, color: "#9b6bdb" },
+  { name: "Excel", icon: FileSpreadsheet, color: "#217346" },
+  { name: "Big Data", icon: Network, color: "#48a9c5" },
+  { name: "IA Generativa", icon: Sparkles, color: "#b58cff" },
+  { name: "ETL", icon: Workflow, color: "#59b6a4" },
+  { name: "KPIs", icon: Gauge, color: "#f2c811" },
+  { name: "Automação", icon: Bot, color: "#ea4b71" },
+  { name: "APIs", icon: PlugZap, color: "#78a9ff" },
+];
+
+function StackLogo({ name, icon: Icon, color }: (typeof technologies)[number]) {
+  if (name === "Power BI") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
+        <path d="M20 5a2 2 0 0 1 2 2v26a2 2 0 0 1-4 0V7a2 2 0 0 1 2-2Z" fill={color} />
+        <path d="M29 12a2 2 0 0 1 2 2v19a2 2 0 0 1-4 0V14a2 2 0 0 1 2-2ZM11 19a2 2 0 0 1 2 2v12a2 2 0 0 1-4 0V21a2 2 0 0 1 2-2ZM36 22a2 2 0 0 1 2 2v9a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2Z" fill={color} opacity=".7" />
+      </svg>
+    );
+  }
+
+  if (name === "Python") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
+        <path d="M19.6 4c-8.5 0-8 3.7-8 3.7v5h8.2v1.6H8.4S4 13.8 4 21.3c0 7.4 3.8 7.2 3.8 7.2h4.5v-5.2s-.2-4.3 4.2-4.3h7.2s4 .1 4-3.9V8.6S28.3 4 19.6 4Zm-4.5 3.1a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z" fill="#3776ab" />
+        <path d="M20.4 36c8.5 0 8-3.7 8-3.7v-5h-8.2v-1.6h11.4s4.4.5 4.4-7c0-7.4-3.8-7.2-3.8-7.2h-4.5v5.2s.2 4.3-4.2 4.3h-7.2s-4-.1-4 3.9v6.5s-.6 4.6 8.1 4.6Zm4.5-3.1a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" fill="#ffd343" />
+      </svg>
+    );
+  }
+
+  if (name === "n8n") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9" fill="none" stroke={color} strokeWidth="3">
+        <path d="M9 20h8m6 0h8M20 9v8m0 6v8" />
+        <circle cx="7" cy="20" r="4" fill="#0c0c0c" />
+        <circle cx="33" cy="20" r="4" fill="#0c0c0c" />
+        <circle cx="20" cy="7" r="4" fill="#0c0c0c" />
+        <circle cx="20" cy="33" r="4" fill="#0c0c0c" />
+        <circle cx="20" cy="20" r="4" fill={color} stroke="none" />
+      </svg>
+    );
+  }
+
+  if (name === "Excel") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
+        <path d="M21 5h14a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2H21V5Z" fill="#217346" />
+        <path d="M22 11h11v5H22zm0 8h11v5H22zm0 8h11v5H22z" fill="#fff" opacity=".2" />
+        <path d="m5 10 18-3v26L5 30V10Z" fill="#185c37" />
+        <path d="m10 14 3.5 5.3L17 14h3l-5 7 5 7h-3l-3.5-5.2L10 28H7l5-7-5-7h3Z" fill="#fff" />
+      </svg>
+    );
+  }
+
   return (
-    <section id="projetos" className="relative z-10 -mt-10 rounded-t-[40px] bg-background px-5 pb-20 pt-20 sm:-mt-12 sm:rounded-t-[50px] sm:px-8 md:-mt-14 md:rounded-t-[60px] md:px-10 md:pt-28">
-      <FadeIn y={40}>
-        <h2 className="hero-heading mb-10 text-center font-black uppercase leading-none tracking-tight" style={{ fontSize: "clamp(3rem, 12vw, 160px)" }}>Projetos</h2>
-      </FadeIn>
-      <div className="mx-auto max-w-6xl">
-        {projects.map((p, i) => <ProjectCard key={p.name} p={p} i={i} total={projects.length} />)}
-      </div>
-      <div className="mt-10 flex flex-col items-center gap-8 text-center">
-        <p className="hero-heading font-black uppercase leading-none" style={{ fontSize: "clamp(2.5rem, 8vw, 120px)" }}>Vamos conversar?</p>
-        <ContactButton />
-        <p className="mt-10 text-sm text-muted-foreground">© 2026 André Vinícius de Oliveira Passos · Salvador, BA</p>
+    <Icon
+      aria-hidden="true"
+      className="h-8 w-8 transition-transform duration-300 group-hover:scale-110 sm:h-9 sm:w-9"
+      strokeWidth={1.7}
+      style={{ color }}
+    />
+  );
+}
+
+function Projects() {
+  const [activeTab, setActiveTab] = useState<ShowcaseTab>("projects");
+
+  return (
+    <section id="projetos" className="relative z-10 scroll-mt-24 border-t border-border bg-background px-6 pb-20 pt-24 sm:px-10 md:px-14 md:pt-32">
+      <div className="mx-auto max-w-7xl">
+        <FadeIn y={40}>
+          <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-ember">Portfólio em destaque</p>
+          <div className="mb-10 flex flex-col gap-5 md:mb-14 md:flex-row md:items-end md:justify-between">
+            <h2 className="hero-heading font-black uppercase leading-[0.9] tracking-[-0.06em]" style={{ fontSize: "clamp(3.5rem, 9vw, 8rem)" }}>
+              Projetos
+            </h2>
+            <p className="max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+              Projetos, formação e conhecimentos técnicos aplicados a dados, sistemas e automação.
+            </p>
+          </div>
+        </FadeIn>
+
+        <div className="mb-10 flex flex-wrap gap-2 border-b border-border pb-4" role="group" aria-label="Categorias do portfólio">
+          {showcaseTabs.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={activeTab === id}
+              onClick={() => setActiveTab(id)}
+              className={`rounded-full border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors ${
+                activeTab === id
+                  ? "border-ember bg-ember text-white"
+                  : "border-border text-white/55 hover:border-white/35 hover:text-white"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "projects" && (
+          <div className="mx-auto max-w-6xl">
+            {projects.map((p, i) => <ProjectCard key={p.name} p={p} i={i} total={projects.length} />)}
+          </div>
+        )}
+
+        {activeTab === "education" && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
+              <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Formação</p>
+              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Análise de Sistemas</h3>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
+              <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Pós-graduação</p>
+              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Ciência de Dados e Inteligência Artificial</h3>
+            </article>
+          </div>
+        )}
+
+        {activeTab === "technology" && (
+          <div className="stack-showcase grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
+            {technologies.map(({ name, icon: Icon, color }) => (
+              <div
+                key={name}
+                className="group flex min-h-36 flex-col items-center justify-center gap-4 rounded-[22px] border border-white/10 bg-[#181818] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-ember/50 hover:bg-[#1d1d1d] sm:min-h-40"
+              >
+                <div
+                  className="transition-transform duration-300 group-hover:scale-110"
+                  style={{ color }}
+                >
+                  <StackLogo name={name} icon={Icon} color={color} />
+                </div>
+                <h3 className="text-center text-sm font-semibold tracking-tight text-white/85 transition-colors group-hover:text-white sm:text-base">
+                  {name}
+                </h3>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 }
 
+function ClosingCTA() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const backgroundColor = useTransform(
+    scrollYProgress,
+    [0, 0.3, 0.7, 1],
+    ["#000000", "#1a080d", "#1a080d", "#000000"],
+  );
+
+  return (
+    <motion.section
+      ref={sectionRef}
+      id="contato"
+      aria-labelledby="closing-title"
+      style={{ backgroundColor: shouldReduceMotion ? "#1a080d" : backgroundColor }}
+      className="flex min-h-[55vh] flex-col items-center justify-center gap-8 px-5 py-20 text-center sm:px-8 md:min-h-[65vh] md:py-28"
+    >
+      <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/55">Contato</p>
+      <h2
+        id="closing-title"
+        className="font-black uppercase leading-none tracking-tight text-white"
+        style={{ fontSize: "clamp(2.5rem, 8vw, 120px)" }}
+      >
+        Vamos conversar?
+      </h2>
+      <p className="max-w-lg text-sm leading-relaxed text-white/70 sm:text-base">
+        Quer conversar sobre dados, tecnologia ou um novo projeto? Entre em contato.
+      </p>
+      <ContactButton inverse />
+      <p className="mt-8 text-sm text-white/70">
+        © 2026 André Vinícius de Oliveira Passos · Salvador, BA
+      </p>
+    </motion.section>
+  );
+}
+
 function Index() {
+  const { scrollYProgress } = useScroll();
+
   return (
     <main className="bg-background" style={{ overflowX: "clip" }}>
-      <FixedCharacter />
+      <motion.div
+        aria-hidden="true"
+        className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-ember"
+        style={{ scaleX: scrollYProgress }}
+      />
+      <SiteHeader />
       <Hero />
-      <Marquee />
       <About />
       <Projects />
+      <ClosingCTA />
     </main>
   );
 }
