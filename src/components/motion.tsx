@@ -23,7 +23,7 @@ export function FadeIn({
       className={className}
       initial={shouldReduceMotion ? false : { opacity: 0, x, y }}
       whileInView={{ opacity: 1, x: 0, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -40px 0px", amount: 0.15 }}
+      viewport={{ once: false, margin: "0px 0px -40px 0px", amount: 0.15 }}
       transition={{
         delay: shouldReduceMotion ? 0 : delay,
         duration: shouldReduceMotion ? 0 : duration,

@@ -14,12 +14,10 @@ import {
   ArrowDown,
   ArrowUpRight,
   BrainCircuit,
-  Bot,
   Code2,
   Database,
   Gauge,
   Menu,
-  Network,
   PlugZap,
   Workflow,
   X,
@@ -190,26 +188,31 @@ function DataCharacter() {
   const eyeY = useSpring(gazeY, { stiffness: 120, damping: 22, mass: 0.4 });
 
   return (
-    <svg
-      viewBox="0 0 640 577"
-      role="img"
-      aria-label="Retrato de Vinicius Passos"
-      className="h-full w-full"
-      xmlns="http://www.w3.org/2000/svg"
+    <motion.div
+      animate={shouldReduceMotion ? undefined : { y: [0, -7, 0] }}
+      transition={shouldReduceMotion ? undefined : { duration: 5, repeat: Infinity, ease: "easeInOut" }}
     >
-      <defs>
-        <clipPath id="eye-clip-left"><ellipse cx="267.5" cy="208.7" rx="21" ry="10.5" /></clipPath>
-        <clipPath id="eye-clip-right"><ellipse cx="368" cy="208" rx="22" ry="10.5" /></clipPath>
-      </defs>
-      <image href={portraitImage} width="640" height="577" />
-      {/* íris originais do boneco, acompanhando a rolagem */}
-      <g clipPath="url(#eye-clip-left)">
-        <motion.image href={irisLeft} x="254" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
-      </g>
-      <g clipPath="url(#eye-clip-right)">
-        <motion.image href={irisRight} x="352" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
-      </g>
-    </svg>
+      <svg
+        viewBox="0 0 640 577"
+        role="img"
+        aria-label="Retrato de Vinicius Passos"
+        className="h-full w-full"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <clipPath id="eye-clip-left"><ellipse cx="267.5" cy="208.7" rx="21" ry="10.5" /></clipPath>
+          <clipPath id="eye-clip-right"><ellipse cx="368" cy="208" rx="22" ry="10.5" /></clipPath>
+        </defs>
+        <image href={portraitImage} width="640" height="577" />
+        {/* íris originais do boneco, acompanhando a rolagem */}
+        <g clipPath="url(#eye-clip-left)">
+          <motion.image href={irisLeft} x="254" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
+        </g>
+        <g clipPath="url(#eye-clip-right)">
+          <motion.image href={irisRight} x="352" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
+        </g>
+      </svg>
+    </motion.div>
   );
 }
 
@@ -262,9 +265,7 @@ function Hero() {
 
   return (
     <section id="inicio" className="relative flex min-h-[100svh] scroll-mt-24 flex-col overflow-x-clip border-t border-border">
-      <div aria-hidden="true" className="editorial-grid pointer-events-none absolute inset-0 opacity-80" />
-
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 items-center gap-6 px-6 pb-8 pt-10 sm:px-10 md:px-14 lg:grid-cols-[1.1fr_.9fr] lg:gap-10 lg:pb-12 lg:pt-28">
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl flex-1 grid-cols-1 items-center gap-6 px-6 pb-8 pt-28 sm:px-10 sm:pt-32 md:px-14 lg:grid-cols-[1.1fr_.9fr] lg:gap-10 lg:pb-12 lg:pt-32">
         <div className="relative z-20 flex flex-col items-start">
           <motion.h1
             aria-label={heading}
@@ -349,7 +350,7 @@ function Hero() {
 /* ---------------- ABOUT ---------------- */
 function About() {
   return (
-    <section id="sobre" className="relative z-10 grid min-h-[80vh] scroll-mt-24 items-center gap-12 border-t border-border bg-background px-6 py-24 sm:px-10 md:grid-cols-[0.8fr_1.2fr] md:gap-20 md:px-14">
+    <section id="sobre" className="relative z-10 grid min-h-[80vh] scroll-mt-24 items-center gap-12 border-t border-border px-6 py-24 sm:px-10 md:grid-cols-[0.8fr_1.2fr] md:gap-20 md:px-14">
       <FadeIn y={40}>
         <div>
           <p className="mb-5 text-xs font-medium uppercase tracking-[0.2em] text-ember">Perfil profissional</p>
@@ -385,14 +386,14 @@ function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number;
   const target = 1 - (total - 1 - i) * 0.03;
   const scale = useTransform(scrollYProgress, [0, 1], [1, target]);
   return (
-    <div ref={ref} className="h-[85vh]">
+    <div ref={ref} className="h-auto min-h-[85svh] lg:h-[calc(85vh+13rem)]">
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.15 }}
+        viewport={{ once: false, amount: 0.15 }}
         transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         style={{ scale: shouldReduceMotion ? 1 : scale, top: `calc(6rem + ${i * 28}px)` }}
-        className="project-card sticky rounded-2xl border border-border bg-background p-4 sm:p-6 md:p-8"
+        className="project-card rounded-2xl border border-border bg-background p-4 sm:p-6 md:p-8 lg:sticky"
       >
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 px-2">
           <div className="flex items-center gap-5">
@@ -404,17 +405,17 @@ function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number;
           </div>
           <GhostButton label="Ver detalhes" />
         </div>
-        <div className="flex gap-3">
-          <div className="flex w-[40%] flex-col gap-3">
-            <div className="flex items-end rounded-xl bg-card p-6" style={{ height: "clamp(130px, 16vw, 230px)" }}>
+        <div className="flex flex-col gap-3 lg:h-[clamp(220px,42vh,400px)] lg:flex-row">
+          <div className="flex w-full flex-row gap-3 lg:h-full lg:w-[40%] lg:flex-col">
+            <div className="flex min-h-28 flex-1 items-end rounded-xl bg-card p-4 sm:p-6">
               <p className="font-medium uppercase" style={{ fontSize: "clamp(0.9rem, 1.8vw, 1.6rem)" }}>{p.a}</p>
             </div>
-            <div className="flex items-end rounded-xl bg-secondary p-6" style={{ height: "clamp(160px, 22vw, 340px)" }}>
+            <div className="flex min-h-28 flex-1 items-end rounded-xl bg-secondary p-4 sm:p-6">
               <p className="hero-heading font-black uppercase" style={{ fontSize: "clamp(1rem, 2.4vw, 2.4rem)" }}>{p.b}</p>
             </div>
           </div>
           <img src={p.img} alt={p.name} loading="lazy" width={1280} height={960}
-            className="w-[60%] rounded-xl object-cover" />
+            className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]" />
         </div>
       </motion.div>
     </div>
@@ -429,23 +430,73 @@ const showcaseTabs = [
 
 type ShowcaseTab = (typeof showcaseTabs)[number]["id"];
 
-const technologies: { name: string; icon: LucideIcon; color: string }[] = [
-  { name: "Power BI", icon: Gauge, color: "#f2c811" },
-  { name: "Python", icon: Code2, color: "#3776ab" },
-  { name: "n8n", icon: Workflow, color: "#ea4b71" },
-  { name: "SQL", icon: Database, color: "#e38c35" },
-  { name: "PLN", icon: BrainCircuit, color: "#9b6bdb" },
-  { name: "Big Data", icon: Network, color: "#48a9c5" },
-  { name: "ETL", icon: Workflow, color: "#59b6a4" },
-  { name: "KPIs", icon: Gauge, color: "#f2c811" },
-  { name: "Automação", icon: Bot, color: "#ea4b71" },
-  { name: "APIs", icon: PlugZap, color: "#78a9ff" },
+type TechnologyGroupId = "data" | "fullstack" | "tools";
+
+const technologyGroups: {
+  id: TechnologyGroupId;
+  label: string;
+  title: string;
+  description: string;
+}[] = [
+  {
+    id: "data",
+    label: "01 / Dados",
+    title: "Análise de Dados",
+    description: "Ferramentas para explorar dados, criar visualizações e comunicar resultados.",
+  },
+  {
+    id: "fullstack",
+    label: "02 / Desenvolvimento",
+    title: "Desenvolvimento Full-Stack",
+    description: "Tecnologias para criar interfaces, aplicações web e experiências interativas.",
+  },
+  {
+    id: "tools",
+    label: "03 / Ecossistema",
+    title: "IA, Cloud & Ferramentas",
+    description: "Serviços e ferramentas que apoiam aplicações, integrações e fluxos de trabalho.",
+  },
 ];
 
-function StackLogo({ name, icon: Icon, color }: (typeof technologies)[number]) {
+const technologies: {
+  name: string;
+  icon: LucideIcon;
+  color: string;
+  group: TechnologyGroupId;
+  logo?: string;
+}[] = [
+  { name: "Python", icon: Code2, color: "#3776ab", group: "data" },
+  { name: "Pandas", icon: Code2, color: "#150458", group: "data", logo: "pandas" },
+  { name: "SQL", icon: Database, color: "#e38c35", group: "data" },
+  { name: "Jupyter", icon: Code2, color: "#f37626", group: "data", logo: "jupyter" },
+  { name: "Power BI", icon: Gauge, color: "#f2c811", group: "data" },
+  { name: "Python", icon: Code2, color: "#3776ab", group: "fullstack" },
+  { name: "TypeScript", icon: Code2, color: "#3178c6", group: "fullstack", logo: "typescript" },
+  { name: "JavaScript", icon: Code2, color: "#f7df1e", group: "fullstack", logo: "javascript" },
+  { name: "React", icon: Code2, color: "#61dafb", group: "fullstack", logo: "react" },
+  { name: "Next.js", icon: Code2, color: "#ffffff", group: "fullstack", logo: "nextdotjs" },
+  { name: "Node.js", icon: Code2, color: "#5fa04e", group: "fullstack", logo: "nodedotjs" },
+  { name: "Tailwind", icon: Code2, color: "#06b6d4", group: "fullstack", logo: "tailwindcss" },
+  { name: "HTML", icon: Code2, color: "#e34f26", group: "fullstack", logo: "html5" },
+  { name: "CSS", icon: Code2, color: "#1572b6", group: "fullstack", logo: "css3" },
+  { name: "LLM APIs", icon: BrainCircuit, color: "#9b6bdb", group: "tools" },
+  { name: "PostgreSQL", icon: Database, color: "#4169e1", group: "tools", logo: "postgresql" },
+  { name: "Supabase", icon: Database, color: "#3fcf8e", group: "tools", logo: "supabase" },
+  { name: "Docker", icon: Database, color: "#2496ed", group: "tools", logo: "docker" },
+  { name: "Vercel", icon: Database, color: "#ffffff", group: "tools", logo: "vercel" },
+  { name: "Git", icon: Code2, color: "#f05032", group: "tools", logo: "git" },
+  { name: "GitHub", icon: Code2, color: "#ffffff", group: "tools", logo: "github" },
+  { name: "Postman", icon: PlugZap, color: "#ff6c37", group: "tools", logo: "postman" },
+  { name: "n8n", icon: Workflow, color: "#ea4b71", group: "tools", logo: "n8n" },
+  { name: "Arduino", icon: Code2, color: "#00979d", group: "tools", logo: "arduino" },
+];
+
+function StackLogo({ name, icon: Icon, color, logo }: (typeof technologies)[number]) {
+  const [logoFailed, setLogoFailed] = useState(false);
+
   if (name === "Power BI") {
     return (
-      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-5 w-5">
         <path d="M20 5a2 2 0 0 1 2 2v26a2 2 0 0 1-4 0V7a2 2 0 0 1 2-2Z" fill={color} />
         <path d="M29 12a2 2 0 0 1 2 2v19a2 2 0 0 1-4 0V14a2 2 0 0 1 2-2ZM11 19a2 2 0 0 1 2 2v12a2 2 0 0 1-4 0V21a2 2 0 0 1 2-2ZM36 22a2 2 0 0 1 2 2v9a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2Z" fill={color} opacity=".7" />
       </svg>
@@ -454,30 +505,30 @@ function StackLogo({ name, icon: Icon, color }: (typeof technologies)[number]) {
 
   if (name === "Python") {
     return (
-      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
+      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-5 w-5">
         <path d="M19.6 4c-8.5 0-8 3.7-8 3.7v5h8.2v1.6H8.4S4 13.8 4 21.3c0 7.4 3.8 7.2 3.8 7.2h4.5v-5.2s-.2-4.3 4.2-4.3h7.2s4 .1 4-3.9V8.6S28.3 4 19.6 4Zm-4.5 3.1a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z" fill="#3776ab" />
         <path d="M20.4 36c8.5 0 8-3.7 8-3.7v-5h-8.2v-1.6h11.4s4.4.5 4.4-7c0-7.4-3.8-7.2-3.8-7.2h-4.5v5.2s.2 4.3-4.2 4.3h-7.2s-4-.1-4 3.9v6.5s-.6 4.6 8.1 4.6Zm4.5-3.1a1.4 1.4 0 1 1 0-2.8 1.4 1.4 0 0 1 0 2.8Z" fill="#ffd343" />
       </svg>
     );
   }
 
-  if (name === "n8n") {
+  if (logo && !logoFailed) {
     return (
-      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9" fill="none" stroke={color} strokeWidth="3">
-        <path d="M9 20h8m6 0h8M20 9v8m0 6v8" />
-        <circle cx="7" cy="20" r="4" fill="#0c0c0c" />
-        <circle cx="33" cy="20" r="4" fill="#0c0c0c" />
-        <circle cx="20" cy="7" r="4" fill="#0c0c0c" />
-        <circle cx="20" cy="33" r="4" fill="#0c0c0c" />
-        <circle cx="20" cy="20" r="4" fill={color} stroke="none" />
-      </svg>
+      <img
+        aria-hidden="true"
+        src={`https://cdn.simpleicons.org/${logo}/${color.replace("#", "")}`}
+        alt=""
+        className="h-5 w-5 object-contain"
+        loading="lazy"
+        onError={() => setLogoFailed(true)}
+      />
     );
   }
 
   return (
     <Icon
       aria-hidden="true"
-      className="h-8 w-8 transition-transform duration-300 group-hover:scale-110 sm:h-9 sm:w-9"
+      className="h-5 w-5 shrink-0 transition-transform duration-300 group-hover:scale-110"
       strokeWidth={1.7}
       style={{ color }}
     />
@@ -488,7 +539,7 @@ function Projects() {
   const [activeTab, setActiveTab] = useState<ShowcaseTab>("projects");
 
   return (
-    <section id="projetos" className="relative z-10 scroll-mt-24 border-t border-border bg-background px-6 pb-20 pt-24 sm:px-10 md:px-14 md:pt-32">
+    <section id="projetos" className="relative z-10 scroll-mt-24 border-t border-border px-6 pb-20 pt-24 sm:px-10 md:px-14 md:pt-32">
       <div className="mx-auto max-w-7xl">
         <FadeIn y={40}>
           <p className="mb-4 text-xs font-medium uppercase tracking-[0.2em] text-ember">Portfólio em destaque</p>
@@ -540,20 +591,35 @@ function Projects() {
         )}
 
         {activeTab === "technology" && (
-          <div className="stack-showcase grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-            {technologies.map(({ name, icon: Icon, color }, index) => (
-              <FadeIn key={name} delay={index * 0.045} y={12}>
-                <div className="group flex min-h-36 flex-col items-center justify-center gap-4 rounded-[22px] border border-white/10 bg-[#181818] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-ember/50 hover:bg-[#1d1d1d] sm:min-h-40">
-                  <div
-                    className="transition-transform duration-300 group-hover:scale-110"
-                    style={{ color }}
-                  >
-                    <StackLogo name={name} icon={Icon} color={color} />
-                  </div>
-                  <h3 className="text-center text-sm font-semibold tracking-tight text-white/85 transition-colors group-hover:text-white sm:text-base">
-                    {name}
+          <div className="stack-showcase grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {technologyGroups.map(({ id, label, title, description }, index) => (
+              <FadeIn key={id} delay={index * 0.08} y={12}>
+                <article className="stack-group-card h-full rounded-2xl border border-transparent bg-[#0c0c0c] p-5 transition-colors duration-300 sm:p-6 md:p-7">
+                  <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ember">
+                    {label}
+                  </p>
+                  <h3 className="mb-3 text-xl font-black uppercase leading-tight tracking-[-0.04em] text-white sm:text-2xl">
+                    {title}
                   </h3>
-                </div>
+                  <p className="mb-6 min-h-12 text-sm leading-relaxed text-white/60">
+                    {description}
+                  </p>
+                  <ul className="flex flex-wrap gap-2">
+                    {technologies
+                      .filter((technology) => technology.group === id)
+                      .map(({ name, icon: Icon, color, logo }) => (
+                        <li
+                          key={name}
+                          className="group inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white/85 transition-colors hover:border-ember/50 hover:bg-white/[0.06]"
+                        >
+                          <span className="transition-transform duration-300 group-hover:scale-110" style={{ color }}>
+                            <StackLogo name={name} icon={Icon} color={color} logo={logo} />
+                          </span>
+                          {name}
+                        </li>
+                      ))}
+                  </ul>
+                </article>
               </FadeIn>
             ))}
           </div>
@@ -573,7 +639,7 @@ function ClosingCTA() {
   const backgroundColor = useTransform(
     scrollYProgress,
     [0, 0.3, 0.7, 1],
-    ["#000000", "#1a080d", "#1a080d", "#000000"],
+    ["rgba(0, 0, 0, 0)", "rgba(26, 8, 13, 0.84)", "rgba(26, 8, 13, 0.84)", "rgba(0, 0, 0, 0)"],
   );
 
   return (
@@ -581,7 +647,7 @@ function ClosingCTA() {
       ref={sectionRef}
       id="contato"
       aria-labelledby="closing-title"
-      style={{ backgroundColor: shouldReduceMotion ? "#1a080d" : backgroundColor }}
+      style={{ backgroundColor: shouldReduceMotion ? "rgba(26, 8, 13, 0.84)" : backgroundColor }}
       className="flex min-h-[55vh] flex-col items-center justify-center gap-8 px-5 py-20 text-center sm:px-8 md:min-h-[65vh] md:py-28"
     >
       <p className="text-xs font-medium uppercase tracking-[0.2em] text-white/55">Contato</p>
@@ -603,12 +669,136 @@ function ClosingCTA() {
   );
 }
 
+function ScrollContours() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+
+    const reduceMotion = Boolean(shouldReduceMotion);
+    const clusters = [
+      { x: -0.07, y: 0.16, rx: 0.39, ry: 0.32, seed: 0.4, rate: 0.71 },
+      { x: 0.88, y: 0.12, rx: 0.34, ry: 0.36, seed: 2.1, rate: 0.93 },
+      { x: 0.18, y: 0.86, rx: 0.43, ry: 0.3, seed: 4.3, rate: 0.58 },
+      { x: 1.04, y: 0.79, rx: 0.37, ry: 0.4, seed: 5.8, rate: 0.82 },
+    ];
+    let width = 0;
+    let height = 0;
+    let targetScroll = window.scrollY;
+    let currentScroll = targetScroll;
+    let scrollVelocity = 0;
+    let lastFrameTime = 0;
+    let frameId: number | null = null;
+
+    const resizeCanvas = () => {
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = Math.round(width * pixelRatio);
+      canvas.height = Math.round(height * pixelRatio);
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+      draw(currentScroll, scrollVelocity);
+    };
+
+    const draw = (scrollPosition: number, velocity: number) => {
+      context.clearRect(0, 0, width, height);
+      const scrollPhase = scrollPosition / Math.max(height * 0.62, 1);
+
+      clusters.forEach(({ x, y, rx, ry, seed, rate }) => {
+        const phase = scrollPhase * rate + seed + velocity * 0.8;
+        const centerX = width * (x + Math.sin(phase * 0.19 + seed) * 0.018);
+        const centerY = height * (y + Math.cos(phase * 0.16 + seed) * 0.022);
+        const scaleShift = 1 + Math.sin(phase * 0.23 + seed * 1.7) * 0.045;
+
+        for (let ring = 0; ring < 6; ring += 1) {
+          const radiusScale = (0.3 + ring * 0.135) * scaleShift;
+          const points = 144;
+          context.beginPath();
+
+          for (let point = 0; point <= points; point += 1) {
+            const angle = (point / points) * Math.PI * 2;
+            const angleWarp = angle + Math.sin(angle * 2 + phase * 0.31 + seed) * 0.065;
+            const organicEdge =
+              1 +
+              Math.sin(angle * 3 + phase * 0.37 + seed) * 0.07 +
+              Math.cos(angle * 5 - phase * 0.29 + seed * 1.4) * 0.035 +
+              Math.sin(angle * 2 + phase * 0.53 + seed * 2.2) * 0.022;
+            const xOffset =
+              Math.cos(angleWarp) * width * rx * radiusScale * organicEdge +
+              Math.sin(angle * 3 + phase * 0.24 + seed) * width * rx * 0.025;
+            const yOffset =
+              Math.sin(angleWarp) * height * ry * radiusScale * organicEdge +
+              Math.cos(angle * 4 - phase * 0.2 + seed) * height * ry * 0.022;
+            const px = centerX + xOffset;
+            const py = centerY + yOffset;
+
+            if (point === 0) context.moveTo(px, py);
+            else context.lineTo(px, py);
+          }
+
+          context.closePath();
+          context.strokeStyle = `rgba(179, 19, 62, ${0.18 - ring * 0.014})`;
+          context.lineWidth = 0.9;
+          context.stroke();
+        }
+      });
+    };
+
+    const animate = (time: number) => {
+      frameId = null;
+      const elapsed = lastFrameTime ? time - lastFrameTime : 16;
+      lastFrameTime = time;
+      const easing = reduceMotion ? 1 : 1 - Math.exp(-elapsed / 115);
+      currentScroll += (targetScroll - currentScroll) * easing;
+      scrollVelocity *= reduceMotion ? 0 : Math.exp(-elapsed / 190);
+      draw(currentScroll, scrollVelocity);
+
+      if (Math.abs(targetScroll - currentScroll) > 0.1 || Math.abs(scrollVelocity) > 0.01) {
+        frameId = window.requestAnimationFrame(animate);
+      }
+    };
+
+    const scheduleFrame = () => {
+      if (frameId === null) frameId = window.requestAnimationFrame(animate);
+    };
+
+    const handleScroll = () => {
+      const nextScroll = window.scrollY;
+      const delta = nextScroll - targetScroll;
+      targetScroll = nextScroll;
+      if (reduceMotion) {
+        currentScroll = targetScroll;
+        draw(currentScroll, 0);
+        return;
+      }
+      scrollVelocity = Math.max(-1, Math.min(1, scrollVelocity + delta / 100));
+      scheduleFrame();
+    };
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", resizeCanvas);
+      window.removeEventListener("scroll", handleScroll);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
+  }, [shouldReduceMotion]);
+
+  return <canvas ref={canvasRef} aria-hidden="true" className="scroll-contours" />;
+}
+
 function Index() {
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
 
   return (
-    <main className="bg-background" style={{ overflowX: "clip" }}>
+    <main className="min-h-screen" style={{ overflowX: "clip" }}>
+      <ScrollContours />
       <motion.div
         aria-hidden="true"
         className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-ember"

@@ -15,8 +15,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  // Sempre servir em http://localhost:5174/
+  // Sempre servir em http://127.0.0.1:5174/
   vite: {
-    server: { host: "localhost", port: 5174, strictPort: true, watch: { ignored: ["**/.output/**", "**/node_modules/**", "**/.git/**"] } },
+    server: { host: "127.0.0.1", port: 5174, strictPort: true, watch: { ignored: ["**/.output/**", "**/node_modules/**", "**/.git/**"] } },
   },
 });

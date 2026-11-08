@@ -72,6 +72,18 @@
     -webkit-font-smoothing: antialiased;
     scroll-behavior: smooth;
   }
+  body {
+    background-image: none;
+  }
+}
+
+.scroll-contours {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 @utility hero-heading {
@@ -177,31 +189,43 @@
   }
 }
 
-.editorial-grid {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 2.5%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 2.5%) 1px, transparent 1px);
-  background-size: 64px 64px;
-  -webkit-mask-image: radial-gradient(ellipse at center, #000 18%, transparent 82%);
-  mask-image: radial-gradient(ellipse at center, #000 18%, transparent 82%);
-}
-
 .stack-showcase {
-  background-color: #080808;
-  background-image:
-    linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px);
-  background-size: 32px 32px;
-  padding: 1rem;
+  padding: 0;
 }
 
-@media (max-width: 640px) {
-  .editorial-grid {
-    background-size: 44px 44px;
-  }
+.stack-group-card {
+  --stack-corner-color: rgb(179 19 62 / 62%);
+  background-image:
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color)),
+    linear-gradient(var(--stack-corner-color), var(--stack-corner-color));
+  background-position:
+    left top,
+    left top,
+    right top,
+    right top,
+    left bottom,
+    left bottom,
+    right bottom,
+    right bottom;
+  background-repeat: no-repeat;
+  background-size:
+    1.25rem 1px,
+    1px 1.25rem,
+    1.25rem 1px,
+    1px 1.25rem,
+    1.25rem 1px,
+    1px 1.25rem,
+    1.25rem 1px,
+    1px 1.25rem;
+  transition: --stack-corner-color 200ms ease;
+}
 
-  .stack-showcase {
-    background-size: 24px 24px;
-    padding: 0.75rem;
-  }
+.stack-group-card:hover {
+  --stack-corner-color: var(--ember);
 }
