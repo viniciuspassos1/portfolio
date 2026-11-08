@@ -11,8 +11,19 @@ import {
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowDown, ArrowUpRight, BrainCircuit, Bot, Code2, Database, FileSpreadsheet,
-  Gauge, Menu, Network, PlugZap, Sparkles, Workflow, X, type LucideIcon,
+  ArrowDown,
+  ArrowUpRight,
+  BrainCircuit,
+  Bot,
+  Code2,
+  Database,
+  Gauge,
+  Menu,
+  Network,
+  PlugZap,
+  Workflow,
+  X,
+  type LucideIcon,
 } from "lucide-react";
 import { FadeIn, AnimatedText } from "@/components/motion";
 import portraitImage from "@/assets/hero-boneco.png";
@@ -137,12 +148,15 @@ function SiteHeader() {
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 
 function DataCharacter() {
+  const shouldReduceMotion = useReducedMotion();
   const { scrollY, scrollYProgress } = useScroll();
   const velocity = useSpring(useVelocity(scrollY), { stiffness: 90, damping: 28 });
   const pointerX = useMotionValue(0);
   const pointerY = useMotionValue(0);
 
   useEffect(() => {
+    if (shouldReduceMotion) return;
+
     const move = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
       pointerX.set((e.clientX / window.innerWidth) * 2 - 1);
@@ -152,7 +166,7 @@ function DataCharacter() {
     window.addEventListener("pointermove", move);
     window.addEventListener("blur", reset);
     return () => { window.removeEventListener("pointermove", move); window.removeEventListener("blur", reset); };
-  }, [pointerX, pointerY]);
+  }, [pointerX, pointerY, shouldReduceMotion]);
 
   // olhar: varre a página de um lado a outro e "puxa" na direção da rolagem
   const gazeX = useTransform([scrollYProgress, velocity, pointerX], ([p = 0, v = 0, mx = 0]: number[]) => {
@@ -190,10 +204,10 @@ function DataCharacter() {
       <image href={portraitImage} width="640" height="577" />
       {/* íris originais do boneco, acompanhando a rolagem */}
       <g clipPath="url(#eye-clip-left)">
-        <motion.image href={irisLeft} x="254" y="193" width="30" height="30" style={{ x: eyeX, y: eyeY }} />
+        <motion.image href={irisLeft} x="254" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
       </g>
       <g clipPath="url(#eye-clip-right)">
-        <motion.image href={irisRight} x="352" y="193" width="30" height="30" style={{ x: eyeX, y: eyeY }} />
+        <motion.image href={irisRight} x="352" y="193" width="30" height="30" style={{ x: shouldReduceMotion ? 0 : eyeX, y: shouldReduceMotion ? 0 : eyeY }} />
       </g>
     </svg>
   );
@@ -228,23 +242,21 @@ function Hero() {
     visible: {
       transition: {
         delayChildren: shouldReduceMotion ? 0 : 0.2,
-        staggerChildren: shouldReduceMotion ? 0 : 0.045,
+        staggerChildren: shouldReduceMotion ? 0 : 0.035,
       },
     },
   };
   const letterVariants = {
     hidden: {
       opacity: 0,
-      y: shouldReduceMotion ? 0 : 64,
-      rotateX: shouldReduceMotion ? 0 : -75,
-      filter: shouldReduceMotion ? "blur(0px)" : "blur(10px)",
+      y: 22,
+      filter: "blur(4px)",
     },
     visible: {
       opacity: 1,
       y: 0,
-      rotateX: 0,
       filter: "blur(0px)",
-      transition: { duration: shouldReduceMotion ? 0 : 0.7, ease: [0.16, 1, 0.3, 1] },
+      transition: { duration: shouldReduceMotion ? 0 : 0.55, ease: [0.16, 1, 0.3, 1] },
     },
   };
 
@@ -257,9 +269,8 @@ function Hero() {
           <motion.h1
             aria-label={heading}
             variants={headingVariants}
-            initial="hidden"
+            initial={shouldReduceMotion ? false : "hidden"}
             animate="visible"
-            style={{ perspective: 1000 }}
             className="mt-3 flex flex-col items-start text-left text-[clamp(4rem,11vw,9.5rem)] font-black uppercase leading-[0.82] tracking-[-0.065em] text-white"
           >
             {heading.split(" ").map((word) => (
@@ -368,14 +379,21 @@ const projects = [
 ];
 
 function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number; total: number }) {
+  const shouldReduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
   const target = 1 - (total - 1 - i) * 0.03;
   const scale = useTransform(scrollYProgress, [0, 1], [1, target]);
   return (
     <div ref={ref} className="h-[85vh]">
-      <motion.div style={{ scale, top: `calc(6rem + ${i * 28}px)` }}
-        className="project-card sticky rounded-2xl border border-border bg-background p-4 sm:p-6 md:p-8">
+      <motion.div
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.15 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        style={{ scale: shouldReduceMotion ? 1 : scale, top: `calc(6rem + ${i * 28}px)` }}
+        className="project-card sticky rounded-2xl border border-border bg-background p-4 sm:p-6 md:p-8"
+      >
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 px-2">
           <div className="flex items-center gap-5">
             <span className="font-black leading-none text-white" style={{ fontSize: "clamp(2.5rem, 7vw, 100px)" }}>0{i + 1}</span>
@@ -417,9 +435,7 @@ const technologies: { name: string; icon: LucideIcon; color: string }[] = [
   { name: "n8n", icon: Workflow, color: "#ea4b71" },
   { name: "SQL", icon: Database, color: "#e38c35" },
   { name: "PLN", icon: BrainCircuit, color: "#9b6bdb" },
-  { name: "Excel", icon: FileSpreadsheet, color: "#217346" },
   { name: "Big Data", icon: Network, color: "#48a9c5" },
-  { name: "IA Generativa", icon: Sparkles, color: "#b58cff" },
   { name: "ETL", icon: Workflow, color: "#59b6a4" },
   { name: "KPIs", icon: Gauge, color: "#f2c811" },
   { name: "Automação", icon: Bot, color: "#ea4b71" },
@@ -454,17 +470,6 @@ function StackLogo({ name, icon: Icon, color }: (typeof technologies)[number]) {
         <circle cx="20" cy="7" r="4" fill="#0c0c0c" />
         <circle cx="20" cy="33" r="4" fill="#0c0c0c" />
         <circle cx="20" cy="20" r="4" fill={color} stroke="none" />
-      </svg>
-    );
-  }
-
-  if (name === "Excel") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 40 40" className="h-8 w-8 sm:h-9 sm:w-9">
-        <path d="M21 5h14a2 2 0 0 1 2 2v26a2 2 0 0 1-2 2H21V5Z" fill="#217346" />
-        <path d="M22 11h11v5H22zm0 8h11v5H22zm0 8h11v5H22z" fill="#fff" opacity=".2" />
-        <path d="m5 10 18-3v26L5 30V10Z" fill="#185c37" />
-        <path d="m10 14 3.5 5.3L17 14h3l-5 7 5 7h-3l-3.5-5.2L10 28H7l5-7-5-7h3Z" fill="#fff" />
       </svg>
     );
   }
@@ -536,21 +541,20 @@ function Projects() {
 
         {activeTab === "technology" && (
           <div className="stack-showcase grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
-            {technologies.map(({ name, icon: Icon, color }) => (
-              <div
-                key={name}
-                className="group flex min-h-36 flex-col items-center justify-center gap-4 rounded-[22px] border border-white/10 bg-[#181818] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-ember/50 hover:bg-[#1d1d1d] sm:min-h-40"
-              >
-                <div
-                  className="transition-transform duration-300 group-hover:scale-110"
-                  style={{ color }}
-                >
-                  <StackLogo name={name} icon={Icon} color={color} />
+            {technologies.map(({ name, icon: Icon, color }, index) => (
+              <FadeIn key={name} delay={index * 0.045} y={12}>
+                <div className="group flex min-h-36 flex-col items-center justify-center gap-4 rounded-[22px] border border-white/10 bg-[#181818] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-ember/50 hover:bg-[#1d1d1d] sm:min-h-40">
+                  <div
+                    className="transition-transform duration-300 group-hover:scale-110"
+                    style={{ color }}
+                  >
+                    <StackLogo name={name} icon={Icon} color={color} />
+                  </div>
+                  <h3 className="text-center text-sm font-semibold tracking-tight text-white/85 transition-colors group-hover:text-white sm:text-base">
+                    {name}
+                  </h3>
                 </div>
-                <h3 className="text-center text-sm font-semibold tracking-tight text-white/85 transition-colors group-hover:text-white sm:text-base">
-                  {name}
-                </h3>
-              </div>
+              </FadeIn>
             ))}
           </div>
         )}
@@ -600,6 +604,7 @@ function ClosingCTA() {
 }
 
 function Index() {
+  const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
 
   return (
@@ -607,7 +612,7 @@ function Index() {
       <motion.div
         aria-hidden="true"
         className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-ember"
-        style={{ scaleX: scrollYProgress }}
+        style={{ scaleX: shouldReduceMotion ? 0 : scrollYProgress }}
       />
       <SiteHeader />
       <Hero />

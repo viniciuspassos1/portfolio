@@ -157,10 +157,23 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html,
+  body {
+    scroll-behavior: auto !important;
+  }
+
   .btn-cta,
-  .project-card::after {
-    transition: none;
-    animation: none;
+  .project-card::after,
+  .stack-showcase,
+  .stack-showcase * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .btn-cta:hover,
+  .stack-showcase .group:hover,
+  .stack-showcase .group:hover * {
+    transform: none !important;
   }
 }
 
