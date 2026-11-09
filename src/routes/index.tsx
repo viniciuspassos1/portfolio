@@ -362,7 +362,7 @@ function About() {
       <div className="flex flex-col items-start gap-8">
         <AnimatedText
           className="max-w-[680px] text-base font-medium leading-relaxed text-white/75 sm:text-lg"
-          text="Formado em Análise de Sistemas, com pós-graduação em Ciência de Dados e Inteligência Artificial. Transformo dados em insights estratégicos, desenvolvo automações inteligentes e soluções tecnológicas que otimizam processos e impulsionam resultados. Uno análise de dados, desenvolvimento de sistemas e inteligência artificial para transformar informações em oportunidades e desafios em soluções."
+          text="Formado em Análise e Desenvolvimento de Sistemas, com pós-graduação em Ciência de Dados e Inteligência Artificial. Transformo dados em insights estratégicos, desenvolvo automações inteligentes e soluções tecnológicas que otimizam processos e impulsionam resultados. Uno análise de dados, desenvolvimento de sistemas e inteligência artificial para transformar informações em oportunidades e desafios em soluções."
         />
         <FadeIn>
           <ContactButton />
@@ -373,13 +373,21 @@ function About() {
 }
 
 /* ---------------- PROJECTS ---------------- */
-const projects = [
+type PortfolioProject = {
+  cat: string;
+  name: string;
+  img: string;
+  a: string;
+  b: string;
+};
+
+const projects: PortfolioProject[] = [
   { cat: "Just Travel", name: "Controles Inteligentes", img: imgDashboard, a: "Relatórios automáticos", b: "Python · SQL · Excel" },
   { cat: "Automação", name: "Fluxos com n8n + IA", img: imgAutomation, a: "Integração de sistemas", b: "n8n · APIs · LLMs" },
   { cat: "Pós-graduação", name: "Análise de Texto com PLN", img: imgNlp, a: "Big Data & PLN", b: "Python · NLP" },
 ];
 
-function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number; total: number }) {
+function ProjectCard({ p, i, total }: { p: PortfolioProject; i: number; total: number }) {
   const shouldReduceMotion = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -414,8 +422,14 @@ function ProjectCard({ p, i, total }: { p: (typeof projects)[number]; i: number;
               <p className="hero-heading font-black uppercase" style={{ fontSize: "clamp(1rem, 2.4vw, 2.4rem)" }}>{p.b}</p>
             </div>
           </div>
-          <img src={p.img} alt={p.name} loading="lazy" width={1280} height={960}
-            className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]" />
+          <img
+            src={p.img}
+            alt={p.name}
+            loading="lazy"
+            width={1280}
+            height={960}
+            className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]"
+          />
         </div>
       </motion.div>
     </div>
@@ -440,19 +454,19 @@ const technologyGroups: {
 }[] = [
   {
     id: "data",
-    label: "01 / Dados",
+    label: "",
     title: "Análise de Dados",
     description: "Ferramentas para explorar dados, criar visualizações e comunicar resultados.",
   },
   {
     id: "fullstack",
-    label: "02 / Desenvolvimento",
+    label: "",
     title: "Desenvolvimento Full-Stack",
     description: "Tecnologias para criar interfaces, aplicações web e experiências interativas.",
   },
   {
     id: "tools",
-    label: "03 / Ecossistema",
+    label: "",
     title: "IA, Cloud & Ferramentas",
     description: "Serviços e ferramentas que apoiam aplicações, integrações e fluxos de trabalho.",
   },
@@ -468,7 +482,6 @@ const technologies: {
   { name: "Python", icon: Code2, color: "#3776ab", group: "data" },
   { name: "Pandas", icon: Code2, color: "#150458", group: "data", logo: "pandas" },
   { name: "SQL", icon: Database, color: "#e38c35", group: "data" },
-  { name: "Jupyter", icon: Code2, color: "#f37626", group: "data", logo: "jupyter" },
   { name: "Power BI", icon: Gauge, color: "#f2c811", group: "data" },
   { name: "Python", icon: Code2, color: "#3776ab", group: "fullstack" },
   { name: "TypeScript", icon: Code2, color: "#3178c6", group: "fullstack", logo: "typescript" },
@@ -483,7 +496,8 @@ const technologies: {
   { name: "PostgreSQL", icon: Database, color: "#4169e1", group: "tools", logo: "postgresql" },
   { name: "Supabase", icon: Database, color: "#3fcf8e", group: "tools", logo: "supabase" },
   { name: "Docker", icon: Database, color: "#2496ed", group: "tools", logo: "docker" },
-  { name: "Vercel", icon: Database, color: "#ffffff", group: "tools", logo: "vercel" },
+  { name: "AWS", icon: Database, color: "#ff9900", group: "tools", logo: "amazonaws" },
+  { name: "Render", icon: Database, color: "#46e3b7", group: "tools", logo: "render" },
   { name: "Git", icon: Code2, color: "#f05032", group: "tools", logo: "git" },
   { name: "GitHub", icon: Code2, color: "#ffffff", group: "tools", logo: "github" },
   { name: "Postman", icon: PlugZap, color: "#ff6c37", group: "tools", logo: "postman" },
@@ -578,10 +592,14 @@ function Projects() {
         )}
 
         {activeTab === "education" && (
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
               <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Formação</p>
-              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Análise de Sistemas</h3>
+              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Análise e Desenvolvimento de Sistemas</h3>
+            </article>
+            <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
+              <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Desenvolvimento</p>
+              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Programação Full Stack</h3>
             </article>
             <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
               <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Pós-graduação</p>
@@ -594,7 +612,7 @@ function Projects() {
           <div className="stack-showcase grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {technologyGroups.map(({ id, label, title, description }, index) => (
               <FadeIn key={id} delay={index * 0.08} y={12}>
-                <article className="stack-group-card h-full rounded-2xl border border-transparent bg-[#0c0c0c] p-5 transition-colors duration-300 sm:p-6 md:p-7">
+                <article className="stack-group-card h-full rounded-2xl border border-transparent bg-black p-5 transition-colors duration-300 sm:p-6 md:p-7">
                   <p className="mb-3 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ember">
                     {label}
                   </p>

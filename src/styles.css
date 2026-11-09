@@ -99,53 +99,6 @@
   transition: box-shadow 220ms ease, transform 220ms ease, background-color 220ms ease;
 }
 
-.project-card {
-  isolation: isolate;
-}
-
-.project-card::after {
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  padding: 1px;
-  border-radius: inherit;
-  background: conic-gradient(
-    from var(--project-border-angle),
-    transparent 0deg 285deg,
-    #b3133e 330deg,
-    transparent 360deg
-  );
-  content: "";
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 240ms ease;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-}
-
-@property --project-border-angle {
-  syntax: "<angle>";
-  inherits: false;
-  initial-value: 0deg;
-}
-
-@keyframes project-border-wave {
-  to {
-    --project-border-angle: 360deg;
-  }
-}
-
-.project-card:hover {
-  border-color: color-mix(in srgb, var(--ember) 45%, var(--border));
-}
-
-.project-card:hover::after {
-  opacity: 0.65;
-  animation: project-border-wave 5s linear infinite;
-}
-
 .btn-cta:hover {
   box-shadow: var(--shadow-cta);
 }
@@ -175,7 +128,6 @@
   }
 
   .btn-cta,
-  .project-card::after,
   .stack-showcase,
   .stack-showcase * {
     transition: none !important;
