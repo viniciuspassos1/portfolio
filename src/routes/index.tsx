@@ -379,12 +379,16 @@ function About() {
 type PortfolioProject = {
   cat: string;
   name: string;
-  img: string;
+  img?: string;
+  video?: string;
+  href?: string;
   a: string;
   b: string;
 };
 
 const projects: PortfolioProject[] = [
+  { cat: "E-commerce · Agente de IA", name: "HZ Imports", video: "/projects/hz-imports.mp4", a: "E-commerce com agente de IA no WhatsApp", b: "Análise financeira · Estoque" },
+  { cat: "Educação financeira", name: "Altmet Assets & Education", video: "/projects/altmet.mp4", href: "https://altmetassetsandeducation.lovable.app", a: "Plataforma de educação financeira e investimentos digitais", b: "React · Supabase · FastAPI" },
   { cat: "Just Travel", name: "Controles Inteligentes", img: imgDashboard, a: "Relatórios automáticos", b: "Python · SQL · Excel" },
   { cat: "Automação", name: "Fluxos com n8n + IA", img: imgAutomation, a: "Integração de sistemas", b: "n8n · APIs · LLMs" },
   { cat: "Pós-graduação", name: "Análise de Texto com PLN", img: imgNlp, a: "Big Data & PLN", b: "Python · NLP" },
@@ -414,7 +418,7 @@ function ProjectCard({ p, i, total }: { p: PortfolioProject; i: number; total: n
               <h3 className="font-medium uppercase" style={{ fontSize: "clamp(1.1rem, 2.4vw, 2.2rem)" }}>{p.name}</h3>
             </div>
           </div>
-          <GhostButton label="Ver detalhes" />
+          <GhostButton label="Ver detalhes" href={p.href} />
         </div>
         <div className="flex flex-col gap-3 lg:h-[clamp(220px,42vh,400px)] lg:flex-row">
           <div className="flex w-full flex-row gap-3 lg:h-full lg:w-[40%] lg:flex-col">
@@ -425,14 +429,27 @@ function ProjectCard({ p, i, total }: { p: PortfolioProject; i: number; total: n
               <p className="hero-heading font-black uppercase" style={{ fontSize: "clamp(1rem, 2.4vw, 2.4rem)" }}>{p.b}</p>
             </div>
           </div>
-          <img
-            src={p.img}
-            alt={p.name}
-            loading="lazy"
-            width={1280}
-            height={960}
-            className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]"
-          />
+          {p.video ? (
+            <video
+              src={p.video}
+              aria-label={`Demonstração do projeto ${p.name}`}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl bg-black object-cover lg:h-full lg:w-[60%]"
+            />
+          ) : (
+            <img
+              src={p.img}
+              alt={p.name}
+              loading="lazy"
+              width={1280}
+              height={960}
+              className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]"
+            />
+          )}
         </div>
       </motion.div>
     </div>
