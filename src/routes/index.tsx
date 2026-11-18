@@ -389,6 +389,7 @@ type PortfolioProject = {
 const projects: PortfolioProject[] = [
   { cat: "E-commerce · Agente de IA", name: "HZ Imports", video: "/projects/hz-imports.mp4", a: "E-commerce com agente de IA no WhatsApp", b: "Análise financeira · Estoque" },
   { cat: "Educação financeira", name: "Altmet Assets & Education", video: "/projects/altmet.mp4", href: "https://altmetassetsandeducation.lovable.app", a: "Plataforma de educação financeira e investimentos digitais", b: "React · Supabase · FastAPI" },
+  { cat: "Intranet corporativa", name: "Eraldo Júnior Advocacia", video: "/projects/intranet-eraldo.mp4", a: "Intranet com agenda, 2FA e base de conhecimento", b: "React · FastAPI · PostgreSQL" },
   { cat: "Just Travel", name: "Controles Inteligentes", img: imgDashboard, a: "Relatórios automáticos", b: "Python · SQL · Excel" },
   { cat: "Automação", name: "Fluxos com n8n + IA", img: imgAutomation, a: "Integração de sistemas", b: "n8n · APIs · LLMs" },
   { cat: "Pós-graduação", name: "Análise de Texto com PLN", img: imgNlp, a: "Big Data & PLN", b: "Python · NLP" },
