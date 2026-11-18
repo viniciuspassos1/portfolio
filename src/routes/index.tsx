@@ -11,11 +11,14 @@ import {
 } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
+  ArrowLeft,
+  ArrowRight,
   ArrowDown,
   ArrowUpRight,
   BrainCircuit,
   Code2,
   Database,
+  FileText,
   Gauge,
   Menu,
   PlugZap,
@@ -444,6 +447,182 @@ const showcaseTabs = [
 
 type ShowcaseTab = (typeof showcaseTabs)[number]["id"];
 
+type CertificatePage = {
+  src: string;
+  alt: string;
+  label: string;
+};
+
+const systemsDiplomaPages: CertificatePage[] = [
+  {
+    src: "/certificates/diploma-page-1.png",
+    alt: "Diploma de Análise e Desenvolvimento de Sistemas, página 1",
+    label: "Página 1",
+  },
+  {
+    src: "/certificates/diploma-page-2.png",
+    alt: "Diploma de Análise e Desenvolvimento de Sistemas, página 2",
+    label: "Página 2",
+  },
+];
+
+const fullStackCertificatePages: CertificatePage[] = [
+  {
+    src: "/certificates/full-stack-recommendation.jpeg",
+    alt: "Carta de recomendação da Infinity School para Programação Full Stack",
+    label: "Carta de recomendação",
+  },
+  {
+    src: "/certificates/full-stack-certificate.jpeg",
+    alt: "Certificado internacional de Programação Full Stack",
+    label: "Certificado internacional",
+  },
+];
+
+function CertificateViewerCard({
+  id,
+  category,
+  title,
+  dialogTitle,
+  actionLabel,
+  pages,
+}: {
+  id: string;
+  category: string;
+  title: string;
+  dialogTitle: string;
+  actionLabel: string;
+  pages: CertificatePage[];
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activePage, setActivePage] = useState(0);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen && !dialog.open) dialog.showModal();
+    if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen]);
+
+  return (
+    <>
+      <article className="flex min-h-[320px] flex-col overflow-hidden rounded-2xl border border-border bg-card p-7 sm:p-9">
+        <p className="mb-5 text-xs font-medium uppercase tracking-[0.18em] text-ember">
+          {category}
+        </p>
+        <h3 className="min-h-[3.75em] text-xl font-bold uppercase leading-tight sm:text-2xl">
+          {title}
+        </h3>
+        <button
+          type="button"
+          onClick={() => {
+            setActivePage(0);
+            setIsOpen(true);
+          }}
+          aria-label={actionLabel}
+          className="group mt-6 flex h-40 shrink-0 flex-col items-center justify-center gap-3 rounded-xl border border-white/10 bg-black/70 text-white/75 transition-colors hover:border-ember/60 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
+        >
+          <FileText
+            aria-hidden="true"
+            className="h-10 w-10 text-ember transition-transform group-hover:scale-110"
+            strokeWidth={1.5}
+          />
+          <span className="text-xs font-semibold uppercase tracking-wider">{actionLabel}</span>
+        </button>
+      </article>
+
+      <dialog
+        ref={dialogRef}
+        aria-labelledby={`${id}-title`}
+        onClose={() => setIsOpen(false)}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) setIsOpen(false);
+        }}
+        className="m-auto max-h-[96dvh] w-[min(96vw,1000px)] overflow-hidden rounded-2xl border border-border bg-[#111] p-0 text-white backdrop:bg-black/85"
+      >
+        <div className="flex min-h-14 items-center justify-between gap-4 border-b border-white/10 px-4 sm:px-6">
+          <h3
+            id={`${id}-title`}
+            className="text-sm font-semibold uppercase tracking-wide sm:text-base"
+          >
+            {dialogTitle}
+          </h3>
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label={`Fechar ${dialogTitle}`}
+              className="grid h-9 w-9 place-items-center rounded-full border border-white/15 text-white/80 transition-colors hover:border-ember hover:text-white"
+            >
+              <X aria-hidden="true" className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+        <div className="flex h-[min(70dvh,760px)] items-center justify-center bg-[#080808] px-4 py-3">
+          <img
+            src={pages[activePage].src}
+            alt={pages[activePage].alt}
+            className="max-h-full max-w-full object-contain"
+          />
+        </div>
+        <div className="flex min-h-14 items-center justify-center gap-5 border-t border-white/10 px-4">
+          {activePage > 0 && (
+            <button
+              type="button"
+              onClick={() => setActivePage((page) => page - 1)}
+              aria-label={`Ver item anterior de ${dialogTitle}`}
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-ember hover:text-ember"
+            >
+              <ArrowLeft aria-hidden="true" className="h-5 w-5" />
+            </button>
+          )}
+          <p aria-live="polite" className="text-xs text-white/60">
+            {pages[activePage].label} — {activePage + 1} de {pages.length}
+          </p>
+          {activePage < pages.length - 1 && (
+            <button
+              type="button"
+              onClick={() => setActivePage((page) => page + 1)}
+              aria-label={`Ver próximo item de ${dialogTitle}`}
+              className="grid h-10 w-10 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-ember hover:text-ember"
+            >
+              <ArrowRight aria-hidden="true" className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+      </dialog>
+    </>
+  );
+}
+
+function SystemsDiplomaCard() {
+  return (
+    <CertificateViewerCard
+      id="systems-diploma"
+      category="Formação"
+      title="Análise e Desenvolvimento de Sistemas"
+      dialogTitle="Diploma — Análise e Desenvolvimento de Sistemas"
+      actionLabel="Visualizar diploma"
+      pages={systemsDiplomaPages}
+    />
+  );
+}
+
+function FullStackCertificatesCard() {
+  return (
+    <CertificateViewerCard
+      id="full-stack-certificates"
+      category="Desenvolvimento"
+      title="Programação Full Stack"
+      dialogTitle="Certificados — Programação Full Stack"
+      actionLabel="Visualizar certificados"
+      pages={fullStackCertificatePages}
+    />
+  );
+}
+
 type TechnologyGroupId = "data" | "fullstack" | "tools";
 
 const technologyGroups: {
@@ -593,14 +772,8 @@ function Projects() {
 
         {activeTab === "education" && (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
-              <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Formação</p>
-              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Análise e Desenvolvimento de Sistemas</h3>
-            </article>
-            <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
-              <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Desenvolvimento</p>
-              <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Programação Full Stack</h3>
-            </article>
+            <SystemsDiplomaCard />
+            <FullStackCertificatesCard />
             <article className="rounded-2xl border border-border bg-card p-7 sm:p-9">
               <p className="mb-8 text-xs font-medium uppercase tracking-[0.18em] text-ember">Pós-graduação</p>
               <h3 className="text-2xl font-bold uppercase leading-tight sm:text-3xl">Ciência de Dados e Inteligência Artificial</h3>
