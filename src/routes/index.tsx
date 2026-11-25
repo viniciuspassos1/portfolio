@@ -9,7 +9,7 @@ import {
   useTransform,
   useVelocity,
 } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,8 +20,13 @@ import {
   Database,
   FileText,
   Gauge,
+  Maximize,
   Menu,
+  Pause,
+  Play,
   PlugZap,
+  Volume2,
+  VolumeX,
   Workflow,
   X,
   type LucideIcon,
@@ -30,9 +35,6 @@ import { FadeIn, AnimatedText } from "@/components/motion";
 import portraitImage from "@/assets/hero-boneco.png";
 import irisLeft from "@/assets/iris-L.png";
 import irisRight from "@/assets/iris-R.png";
-import imgDashboard from "@/assets/project-dashboard.jpg";
-import imgAutomation from "@/assets/project-automation.jpg";
-import imgNlp from "@/assets/project-nlp.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,6 +52,24 @@ export const Route = createFileRoute("/")({
 
 const LINKEDIN = "https://www.linkedin.com/in/andr%C3%A9-vin%C3%ADcius-de-oliveira-passos-7117b71b6/";
 
+const WHATSAPP = `https://wa.me/5571988783142?text=${encodeURIComponent("Olá, Vinícius! Vi seu portfólio e gostaria de conversar.")}`;
+
+function WhatsAppIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
+      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35ZM12.04 21.5h-.01a9.45 9.45 0 0 1-4.82-1.32l-.35-.21-3.58.94.96-3.49-.23-.36a9.43 9.43 0 0 1-1.45-5.03c0-5.22 4.25-9.46 9.48-9.46 2.53 0 4.9.99 6.69 2.78a9.4 9.4 0 0 1 2.77 6.69c0 5.22-4.25 9.46-9.46 9.46Zm8.05-17.52A11.32 11.32 0 0 0 12.04.65C5.77.65.66 5.75.66 12.03c0 2.01.52 3.97 1.52 5.69L.57 23.6l6.03-1.58a11.36 11.36 0 0 0 5.43 1.38h.01c6.27 0 11.38-5.1 11.38-11.38 0-3.04-1.18-5.9-3.33-8.04Z" />
+    </svg>
+  );
+}
+
+function LinkedInIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden className={className}>
+      <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z" />
+    </svg>
+  );
+}
+
 function ContactButton({ inverse = false }: { inverse?: boolean }) {
   return (
     <a href={LINKEDIN} target="_blank" rel="noreferrer"
@@ -59,7 +79,7 @@ function ContactButton({ inverse = false }: { inverse?: boolean }) {
   );
 }
 
-function GhostButton({ label, href }: { label: string; href?: string }) {
+function GhostButton({ label, href }: { label: string; href?: string | undefined }) {
   return (
     <a href={href ?? LINKEDIN} target="_blank" rel="noreferrer"
       className="inline-flex items-center gap-2 rounded-md border border-border px-6 py-2.5 text-sm font-medium uppercase tracking-widest text-foreground transition-colors hover:border-ember hover:text-ember sm:px-8 sm:py-3">
@@ -376,24 +396,211 @@ function About() {
 }
 
 /* ---------------- PROJECTS ---------------- */
+/** Projeto com apresentação narrada: logo e resumo à esquerda, player à direita. */
 type PortfolioProject = {
   cat: string;
   name: string;
-  img?: string;
-  video?: string;
   href?: string;
-  a: string;
-  b: string;
+  video: string;
+  poster: string;
+  brand: string;
+  summary: ReactNode;
 };
 
 const projects: PortfolioProject[] = [
-  { cat: "E-commerce · Agente de IA", name: "HZ Imports", video: "/projects/hz-imports.mp4", a: "E-commerce com agente de IA no WhatsApp", b: "Análise financeira · Estoque" },
-  { cat: "Educação financeira", name: "Altmet Assets & Education", video: "/projects/altmet.mp4", href: "https://altmetassetsandeducation.lovable.app", a: "Plataforma de educação financeira e investimentos digitais", b: "React · Supabase · FastAPI" },
-  { cat: "Intranet corporativa", name: "Eraldo Júnior Advocacia", video: "/projects/intranet-eraldo.mp4", a: "Intranet com agenda, 2FA e base de conhecimento", b: "React · FastAPI · PostgreSQL" },
-  { cat: "Just Travel", name: "Controles Inteligentes", img: imgDashboard, a: "Relatórios automáticos", b: "Python · SQL · Excel" },
-  { cat: "Automação", name: "Fluxos com n8n + IA", img: imgAutomation, a: "Integração de sistemas", b: "n8n · APIs · LLMs" },
-  { cat: "Pós-graduação", name: "Análise de Texto com PLN", img: imgNlp, a: "Big Data & PLN", b: "Python · NLP" },
+  {
+    cat: "E-commerce · Agente de IA",
+    name: "HZ Imports",
+    video: "/projects/hz-imports.mp4",
+    poster: "/projects/hz-imports-poster.jpg",
+    brand: "/projects/hz-imports-brand.jpg",
+    summary: (
+      <>
+        Plataforma para uma loja multimarca de moda que une <strong>vendas online</strong>,{" "}
+        <strong>atendimento com IA no WhatsApp</strong> e <strong>gestão financeira e de estoque</strong> num só lugar.
+      </>
+    ),
+  },
+  {
+    cat: "Educação financeira",
+    name: "Altmet Assets & Education",
+    video: "/projects/altmet.mp4",
+    poster: "/projects/altmet-poster.jpg",
+    brand: "/projects/altmet-brand.jpg",
+    href: "https://altmetassetsandeducation.lovable.app",
+    summary: (
+      <>
+        Plataforma de <strong>educação financeira</strong> e introdução a <strong>investimentos digitais</strong> para
+        todas as idades, com cursos, dicas gratuitas, <strong>plano financeiro personalizado</strong> e painel de leads.
+      </>
+    ),
+  },
+  {
+    cat: "Intranet corporativa",
+    name: "Eraldo Júnior Advocacia",
+    video: "/projects/intranet-eraldo.mp4",
+    poster: "/projects/intranet-eraldo-poster.jpg",
+    brand: "/projects/intranet-eraldo-brand.jpg",
+    summary: (
+      <>
+        Intranet de um escritório de advocacia que centraliza <strong>agenda e audiências</strong>, os{" "}
+        <strong>códigos 2FA</strong> das contas do escritório e uma <strong>base de conhecimento</strong>, com uma
+        visão personalizada para cada pessoa.
+      </>
+    ),
+  },
 ];
+
+const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+/** Player da apresentação: começa parado numa capa e toca com som ao clicar. */
+function ProjectVideo({ src, poster, title }: { src: string; poster: string; title: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [started, setStarted] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [time, setTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // Com SSR, os metadados podem carregar antes da hidratação e o evento se perde
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v && v.readyState >= 1 && Number.isFinite(v.duration)) setDuration(v.duration);
+  }, []);
+
+  const start = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = false;
+    setStarted(true);
+    v.play().catch(() => {});
+  };
+  const toggle = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) v.play().catch(() => {});
+    else v.pause();
+  };
+  const toggleMute = () => {
+    const v = videoRef.current;
+    if (v) v.muted = !v.muted;
+  };
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else wrapRef.current?.requestFullscreen?.();
+  };
+  const seekTo = (ratio: number) => {
+    const v = videoRef.current;
+    if (v && duration) v.currentTime = Math.min(1, Math.max(0, ratio)) * duration;
+  };
+
+  return (
+    <div ref={wrapRef} className="group/player relative order-first w-full self-start overflow-hidden rounded-xl bg-black lg:order-none">
+      <video
+        ref={videoRef}
+        src={src}
+        poster={poster}
+        preload="metadata"
+        playsInline
+        aria-label={`Apresentação do projeto ${title}`}
+        onClick={toggle}
+        onPlay={(e) => {
+          setPlaying(true);
+          // Só uma apresentação toca por vez
+          document.querySelectorAll("video").forEach((other) => other !== e.currentTarget && other.pause());
+        }}
+        onPause={() => setPlaying(false)}
+        onEnded={() => setPlaying(false)}
+        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onDurationChange={(e) => setDuration(e.currentTarget.duration)}
+        onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
+        className="block aspect-video w-full bg-black object-contain"
+      />
+
+      {!started && (
+        <button
+          type="button"
+          onClick={start}
+          aria-label={`Assistir à apresentação de ${title} com narração`}
+          className="group/cover absolute inset-0 grid place-items-center bg-cover bg-center"
+          style={{ backgroundImage: `linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.78)), url(${poster})` }}
+        >
+          <span className="flex flex-col items-center gap-3.5 px-4 text-center">
+            <span className="relative grid size-16 place-items-center sm:size-20">
+              <span className="absolute inset-0 rounded-full bg-primary/50 animate-ping motion-reduce:animate-none" />
+              <span className="relative grid size-full place-items-center rounded-full bg-primary transition-transform group-hover/cover:scale-105">
+                <Play className="ml-1 size-7 fill-white text-white" aria-hidden />
+              </span>
+            </span>
+            <span className="font-semibold uppercase tracking-wider" style={{ fontSize: "clamp(0.95rem, 1.8vw, 1.3rem)" }}>
+              Assista à apresentação
+            </span>
+            <span className="flex items-center gap-2.5 text-xs uppercase tracking-widest text-neutral-300">
+              {duration > 0 && (
+                <>
+                  {formatTime(duration)}
+                  <span className="size-1 rounded-full bg-neutral-500" />
+                </>
+              )}
+              <Volume2 className="size-4" aria-hidden />
+              Com narração
+            </span>
+          </span>
+        </button>
+      )}
+
+      {started && (
+        <div
+          className={`absolute inset-x-0 bottom-0 flex flex-col gap-1.5 bg-gradient-to-t from-black/85 to-transparent px-3.5 pb-2.5 pt-8 transition-opacity duration-300 ${
+            playing ? "opacity-0 group-hover/player:opacity-100 group-focus-within/player:opacity-100" : "opacity-100"
+          }`}
+        >
+          <div
+            role="slider"
+            tabIndex={0}
+            aria-label="Progresso da apresentação"
+            aria-valuemin={0}
+            aria-valuemax={Math.round(duration)}
+            aria-valuenow={Math.round(time)}
+            aria-valuetext={`${formatTime(time)} de ${formatTime(duration)}`}
+            onClick={(e) => {
+              const r = e.currentTarget.getBoundingClientRect();
+              seekTo((e.clientX - r.left) / r.width);
+            }}
+            onKeyDown={(e) => {
+              const v = videoRef.current;
+              if (!v) return;
+              if (e.key === "ArrowRight") v.currentTime += 5;
+              if (e.key === "ArrowLeft") v.currentTime -= 5;
+            }}
+            className="group/bar flex h-4 cursor-pointer items-center"
+          >
+            <div className="h-1 w-full overflow-hidden rounded-full bg-white/20 transition-[height] group-hover/bar:h-1.5">
+              <div className="h-full bg-primary" style={{ width: `${duration ? (time / duration) * 100 : 0}%` }} />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 text-xs tabular-nums">
+            <button type="button" onClick={toggle} aria-label={playing ? "Pausar" : "Reproduzir"} className="grid size-9 place-items-center rounded-md hover:bg-white/10">
+              {playing ? <Pause className="size-5 fill-white" aria-hidden /> : <Play className="size-5 fill-white" aria-hidden />}
+            </button>
+            <span>
+              {formatTime(time)} / {formatTime(duration)}
+            </span>
+            <span className="flex-1" />
+            <button type="button" onClick={toggleMute} aria-label={muted ? "Ativar som" : "Silenciar"} className="grid size-9 place-items-center rounded-md hover:bg-white/10">
+              {muted ? <VolumeX className="size-5" aria-hidden /> : <Volume2 className="size-5" aria-hidden />}
+            </button>
+            <button type="button" onClick={toggleFullscreen} aria-label="Tela cheia" className="grid size-9 place-items-center rounded-md hover:bg-white/10">
+              <Maximize className="size-5" aria-hidden />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function ProjectCard({ p, i, total }: { p: PortfolioProject; i: number; total: number }) {
   const shouldReduceMotion = useReducedMotion();
@@ -421,36 +628,22 @@ function ProjectCard({ p, i, total }: { p: PortfolioProject; i: number; total: n
           </div>
           <GhostButton label="Ver detalhes" href={p.href} />
         </div>
-        <div className="flex flex-col gap-3 lg:h-[clamp(220px,42vh,400px)] lg:flex-row">
-          <div className="flex w-full flex-row gap-3 lg:h-full lg:w-[40%] lg:flex-col">
-            <div className="flex min-h-28 flex-1 items-end rounded-xl bg-card p-4 sm:p-6">
-              <p className="font-medium uppercase" style={{ fontSize: "clamp(0.9rem, 1.8vw, 1.6rem)" }}>{p.a}</p>
+        <div className="grid gap-3 lg:grid-cols-[38fr_62fr]">
+            <div className="flex flex-col justify-between gap-5 rounded-xl bg-card p-5 sm:p-7">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sobre o projeto</p>
+              <img
+                src={p.brand}
+                alt={`Logo ${p.name}`}
+                loading="lazy"
+                width={900}
+                height={360}
+                className="aspect-[5/2] w-full rounded-lg border border-white/5 object-cover"
+              />
+              <p className="leading-relaxed text-neutral-300 [&_strong]:font-semibold [&_strong]:text-white" style={{ fontSize: "clamp(1rem, 1.35vw, 1.2rem)" }}>
+                {p.summary}
+              </p>
             </div>
-            <div className="flex min-h-28 flex-1 items-end rounded-xl bg-secondary p-4 sm:p-6">
-              <p className="hero-heading font-black uppercase" style={{ fontSize: "clamp(1rem, 2.4vw, 2.4rem)" }}>{p.b}</p>
-            </div>
-          </div>
-          {p.video ? (
-            <video
-              src={p.video}
-              aria-label={`Demonstração do projeto ${p.name}`}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl bg-black object-cover lg:h-full lg:w-[60%]"
-            />
-          ) : (
-            <img
-              src={p.img}
-              alt={p.name}
-              loading="lazy"
-              width={1280}
-              height={960}
-              className="h-[clamp(14rem,40vw,24rem)] w-full rounded-xl object-cover lg:h-full lg:w-[60%]"
-            />
-          )}
+            <ProjectVideo src={p.video} poster={p.poster} title={p.name} />
         </div>
       </motion.div>
     </div>
@@ -870,7 +1063,26 @@ function ClosingCTA() {
       <p className="max-w-lg text-sm leading-relaxed text-white/70 sm:text-base">
         Quer conversar sobre dados, tecnologia ou um novo projeto? Entre em contato.
       </p>
-      <ContactButton inverse />
+      <div className="flex w-full max-w-md flex-col items-stretch gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center">
+        <a
+          href={WHATSAPP}
+          target="_blank"
+          rel="noreferrer"
+          className="btn-cta btn-cta--inverse inline-flex items-center justify-center gap-3 rounded-md px-8 py-3 text-xs font-semibold uppercase tracking-widest transition-transform hover:scale-[1.02] sm:px-10 sm:py-3.5 sm:text-sm md:py-4 md:text-base"
+        >
+          <WhatsAppIcon className="size-5" />
+          WhatsApp
+        </a>
+        <a
+          href={LINKEDIN}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center justify-center gap-3 rounded-md border border-white/35 px-8 py-3 text-xs font-semibold uppercase tracking-widest text-white transition-[transform,border-color,background-color] hover:scale-[1.02] hover:border-white hover:bg-white/5 sm:px-10 sm:py-3.5 sm:text-sm md:py-4 md:text-base"
+        >
+          <LinkedInIcon className="size-5" />
+          LinkedIn
+        </a>
+      </div>
       <p className="mt-8 text-sm text-white/70">
         © 2026 André Vinícius de Oliveira Passos · Salvador, BA
       </p>
